@@ -7,7 +7,7 @@ This solution involves a few concepts:
     doesn't exist in the hashset.
 4. We can then compare the length of the current sequence with the incumbent sequence to determine the longest sequence.
 
-
+This is all O(n) time complexity because, although we go over the dataset at least once, the subsequent checks are O(1) time complexity.
 */
 
 
