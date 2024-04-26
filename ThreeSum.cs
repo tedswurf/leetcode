@@ -3,31 +3,24 @@ A Two Sum problem involves finding the index of two numbers within an array int[
 The solution involves using a Dictionary to store the <num, index> pair visited, and using target k - num[i]
 and checking if the remaining pair exists in the dictionary.
 
-For Three Sum
-
 nums[i] + nums[j] + nums[k] = 0
 
-0 - nums[i] = remainder = nums[j] + nums[k]
+We can reduce this down to a Two Sum problem by fixing the leftmost number
 
-0 - nums[i] = Two Sum solution!!
+a + nums[j] + nums[k] = 0
 
-Find first remainder.
-Check if remainder exists in solved TwoSum dict.
-If yes, add all three numbs to a solution list.
-If no, subtract all numbs in dict from remainder and check if the result exists in dict.
+If we then sort the array, we can use a two-pointer approach to find the remaining two numbers.
 
+a + nums[left] + nums[right] = 0
 
-For each num[i], we need to see if we can find a pair of num[j] and num[k] that add up to 0 - num[i].
-In other words, k = 0 - num[i] = nums[j] + nums[k]
-
-
-
+Note that we do not want to produce the same solution multiple times.
+We can avoid that by noting that if the left neighbor of a is the same, we can skip a.
 */
-
 public class Solution {
     public IList<IList<int>> ThreeSum(int[] nums) {
         var solutionList = new List<IList<int>>();
-        //Console.WriteLine(string.Join(",", nums));
+
+        Array.Sort(nums);
 
         // inputs with less than 3 numbers automatically fail.
         if (nums.Length < 3)
@@ -37,48 +30,47 @@ public class Solution {
 
         for (int i = 0; i < nums.Length; i++)
         {
-            var target = 0 - nums[i];
-            //Console.WriteLine($"0 - nums[{i}]({nums[i]}) = {target}. Is there a TwoSum solution for target={target} in the remaining array?");
-
-            // Reminder: TwoSum Solution:
-            // k = nums[j] + nums[k]
-            // 0 - nums[i] = nums[j] + nums[k]
-            var localTwoSum = new Dictionary<int, int>();
-
-            for (int j = i+1; j < nums.Length; j++)
+            // We should skip if the left neighbor is the same.
+            if (i > 0 && nums[i] == nums[i-1])
             {
-                var localRemainder = target - nums[j];
+                continue;
+            }
+            
+            // if value of i is greater than 0, by nature of the sort array, every subsequent value
+            // will product a sum greater than 0. We can end here. 
+            if (nums[i] > 0)
+            {
+                continue;
+            }
 
-                //Console.WriteLine($"{target} - nums[{j}]({nums[j]}) = {localRemainder}");
+            // two-pointer on a sorted array to find remainder.
+            var left = i+1;
+            var right = nums.Length-1;
 
-                if (localTwoSum.ContainsValue(localRemainder))
+            while (left < right)
+            {
+                var sum = nums[i] + nums[left] + nums[right];
+
+                if (sum > 0)
                 {
-                    //Console.WriteLine($"{localRemainder} IS in TwoSum. The 3Sum solution is {nums[i]}, {nums[j]},{localRemainder}");
-                    // We've found a solution here.
-                    // TODO: But check if we already have a permutation of this set in the solution
-                    // if (solutionList.Contains(x => x.Contains()))
-
-                    var set = new List<int>() { nums[i], nums[j], localRemainder };
-
-                    var dupe = false;
-                    foreach (var solution in solutionList)
-                    {
-                        if (solution.Intersect(set).Count() == 3)
-                        {
-                            dupe = true;
-                        }
-                    }
-
-                    if (!dupe)
-                    {
-                        solutionList.Add(set);
-                    }
+                    right-=1;
+                }
+                else if (sum < 0)
+                {
+                    left+=1;
                 }
                 else
                 {
-                    //Console.WriteLine($"{localRemainder} is not in TwoSum. Add [{j}, {nums[j]}]");
-                    // Add the remainder for future reference
-                    localTwoSum.Add(j, nums[j]);
+                    solutionList.Add(new List<int> { nums[i], nums[left], nums[right]});
+                    
+                    left += 1;
+
+                    // We can simply keep incrementing left pointer if we see the repeat start-of-sequence
+                    // in its left neightbor.
+                    while (left < nums.Length - 1 && nums[left] == nums[left-1])
+                    {
+                        left += 1;
+                    }
                 }
             }
         }
