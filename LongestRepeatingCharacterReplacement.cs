@@ -14,9 +14,8 @@ In this example, we know for a fact that the longest substring will Start and En
 This means that, given enough replacements k, we can ignore any characters in between the front and back.
 Furthermore, we can assume that the longest substring will be any number of characters that already repeat + k potential replacements.
 
-Once we reach a point where we cannot replace any more characters, if the following character is not the same (or we reach the end),
-we check Max(current, max). Following this, given that we know that starting at the same character again to the right will not produce a longer longer substring,
-we move the left pointer right until we reach a different character, or the end.
+Max = largest window + largest k replacements
+
 
 */
 
@@ -26,18 +25,26 @@ public class Solution {
 
         var max = 0;
 
+        // Keeps track of the number of characters in the window.
         var map = new Dictionary<char, int>();
 
         for (int right = 0; right < s.Length; right++)
         {
+            // Add the character to the map, and increment the count of an existing character.
             if (!map.ContainsKey(s[right]))
             {
                 map[s[right]] = 0;
             }
             map[s[right]] += 1;
 
+            // The largest window [right - left + 1] will contain up to max k replacements.
+            // largest window = [most frequent characters + up to k replacements for least frequent characters]
+            // We will want to replace the character that occurs the least, rather than the most frequent characters 
+            // To find the least frequent character, we take window size - max frequency [map.Max(x => x.Value)].
+            // Once the number of characters we need to replace equals or falls below k, we will then have a valid window once more.
             while (right - left + 1 - map.Max(x => x.Value) > k)
             {
+                // We shift the left point to the right until the window is valid again.
                 map[s[left]] -= 1;
                 left += 1;
             }
@@ -48,3 +55,23 @@ public class Solution {
         return max;
     }
 }
+
+
+/*
+Bonus:
+We don't need to actually decrement the count of the character in the map. we can maintain the largest maxf. Here's the reason:
+
+// For a substring to be valid, we need window_length - maxf <= k.
+// Here, maxf is the frequency of the most common character in the current window.
+// The difference window_length - maxf tells us how many characters we'd need to change to make the whole window the same character.
+
+// The biggest valid substring we can get is of size maxf + k.
+// So, the larger maxf is, the better. If maxf doesn't change or goes down, our potential best answer doesn't change.
+// We don't need to update maxf in this case.
+
+// On the other hand, if maxf goes up, it means we've found a character in the current window that appears more often than in previous windows.
+// This means we might be able to get a longer valid substring, so we update maxf.
+
+
+
+*/
