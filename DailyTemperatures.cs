@@ -5,13 +5,12 @@ Once found, we update the ith result with the length of the window.
 After that, the left pointer increments, while the right pointer resets to the immediate right.
 
 **** ACTUALLY SLIDING WINDOW IS NOT THE BEST SOLUTION ****
-The sliding window solution breaks when presented with a bogus testcase of 100x99, followed by oneX100. Cheating!!
+The sliding window solution breaks when presented with a bogus testcase of 100x99, followed by oneX100.
 
-But given this is a stack problem, we should try with a stack.
-Can we somehow keep asc/desc adjacent numbers in the stack?
-
+So the Sliding Window solution passes 47/48 test cases, with the last one failing!!
 
 
+Find the Stack Solution below this Sliding Window one.
 */
 
 public class Solution {
@@ -61,5 +60,44 @@ public class Solution {
         }
 
         return temperatures;
+    }
+}
+
+
+
+/*
+This is a type of stack problem called "Monotonic Decreasing Stack".
+
+A monotonic decreasing problem refers to a problem where a certain property or value decreases monotonically
+(i.e., it either remains constant or decreases) as you progress through the problem.
+
+In the context of the stack problem mentioned in the code, a "Monotonic Decreasing Stack" is a stack that maintains
+its elements in a monotonically decreasing order. This means that each element pushed onto the stack is less than or equal to the element below it.
+
+This type of stack is useful in problems where you need to find the next greater or smaller element in an array,
+such as in the "Daily Temperatures" problem. Here, you're using the stack to keep track of indices of the temperatures,
+and while iterating through the temperature array, you check if the temperature of the current day is greater than the
+temperature of the day at the top of the stack. If it is, you pop the stack and update the result.
+This way, the stack always maintains a decreasing order of temperatures.
+*/
+
+public class Solution {
+    public int[] DailyTemperatures(int[] temperatures) {
+        var result = new int[temperatures.Length];
+
+        var stack = new Stack<int>();
+
+        for (int i = 0; i < temperatures.Length; i++)
+        {
+            while (stack.Count > 0 && temperatures[i] > temperatures[stack.Peek()])
+            {
+                result[stack.Peek()] = i - stack.Peek();
+                stack?.Pop();
+            }
+
+            stack.Push(i);
+        }
+
+        return result;
     }
 }
