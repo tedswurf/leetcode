@@ -15,25 +15,29 @@ if hours <= h, technically we have a k speed that is sufficent, so we mark it do
 if hours > h, we eat too slowly, and need to increase the k to find a better solution.
 
 */
-public class Solution { 
+public class Solution {
     public int MinEatingSpeed(int[] piles, int h) {
-        int low=1, high=piles.Max(); 
+        int left = 1,
+            right = piles.Max();
+        int result = right;
 
-        while(low<=high){
-            int mid=(low+high)/2;
-            double val=0;
+        while(left <= right) {
+            int k = left + (right - left) / 2;
 
-            foreach (var pile in piles) {
-                val += Math.Ceiling((double)pile/mid);
+            // Use double here. An int will cause integer overflow, resulting in a negative number.
+            double hours = 0;
+            foreach(int pile in piles) {
+                hours +=Math.Ceiling((double)pile/k);
             }
-             
-            if(val<=h){ 
-                high=mid-1;
-            }
-            else{
-                low=mid+1;
+
+            if(hours <= h) {
+                result = k;
+                right = k - 1;
+            } else {
+                left = k + 1;
             }
         }
-        return low;
+
+        return result;
     }
 }
