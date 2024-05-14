@@ -32,6 +32,8 @@ nums[4]=10, nums[5]=-4 -> Smallest number found here (-4).
 nums[0]=10
 nums[2]=-4 => the answer is here
 
+BETTER SOLUTION AT BOTTOM
+
 */
 
 public class Solution {
@@ -92,5 +94,44 @@ public class Solution {
         }
 
         return 0;
+    }
+}
+
+/*
+If we divide the array down the middle, we can look at the left and right end of the subarrays
+1. If the left end is smaller than the middle, then the left subarray is sorted. Save the smallest number. We then search the right subarray to potentially find a smaller number.
+2. If the left end is larger than the middle, then the right subarray is sorted, and will contain numbers all greater than the middle (because the larger number wrapped to the left). We then search the left subarray to potentially find a smaller number.
+3. If there is no subarray to the left of the pivot, the pivot is the smallest. 
+*/
+
+public class Solution {
+    public int FindMin(int[] nums) {
+        var left = 0;
+        var right = nums.Length - 1;
+
+        Console.WriteLine($"{string.Join(",",nums)}");
+
+        var smallest = nums[(left+right)/2];
+        while (left <= right)
+        {
+            var pivot = (left + right)/2;
+            //Console.WriteLine($"nums[{pivot}]={nums[pivot]}; smallest = {smallest}");
+
+            smallest = Math.Min(nums[left], smallest);
+            if (nums[left] <= nums[pivot])
+            {
+                //Console.WriteLine($"Go Right");
+                smallest = Math.Min(nums[left], smallest);
+                left = pivot + 1;
+            }
+            else // if (nums[left] > nums[pivot])
+            {
+                right = pivot - 1;
+                smallest = Math.Min(nums[pivot], smallest);
+                //Console.WriteLine($"Go Left");
+            }
+        }
+
+        return smallest;
     }
 }
