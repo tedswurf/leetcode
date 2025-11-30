@@ -3,8 +3,8 @@ class Solution:
         if len(nums) < 3:
             return False
 
-        low, mid, high = nums[0], nums[0], nums[0]
-        lowIndex, midIndex = 0, 0
+        low, mid = nums[0], nums[0]
+        midIndex = 0
 
         for i in range(len(nums)):
             curr = nums[i]
@@ -15,7 +15,6 @@ class Solution:
                 midIndex = i
             elif curr < low:
                 low = curr
-                lowIndex = i
             #print(f"i:{i:<5}curr:{nums[i]:<5}[{low:<3},{mid:<3},{high}]   lowIndex:{lowIndex:<5}midIndex:{midIndex}")
 
         return False
